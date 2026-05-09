@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心血历程生成器 | 你的创作DNA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+        }
+        
+        h1 {
+            color: #2d3748;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #6a11cb, #2575fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .tagline {
+            color: #718096;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .panel {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .panel-title i {
+            color: #6a11cb;
+        }
+        
+        /* 创作区样式 */
+        .writing-area {
+            height: 100%;
+        }
+        
+        .prompt-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            resize: none;
+            height: 120px;
+            transition: border-color 0.3s;
+        }
+        
+        .prompt-input:focus {
+            outline: none;
+            border-color: #6a11cb;
+        }
+        
+        .button-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            flex: 2;
+        }
+        
+        .btn-secondary {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+            flex: 1;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .ai-output {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 200px;
+            margin-bottom: 20px;
+            border: 2px dashed #e2e8f0;
+        }
+        
+        .ai-output.editable {
+            border: 2px solid #c3dafe;
+            background: #f0f7ff;
+        }
+        
+        .editor-tools {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .emoji-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .emoji-btn {
+            font-size: 1.5rem;
+            background: none;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .emoji-btn:hover, .emoji-btn.selected {
+            transform: scale(1.1);
+            border-color: #6a11cb;
+            background: #f0f7ff;
+        }
+        
+        /* 历程区样式 */
+        .journey-area {
+            height: 100%;
+        }
+        
+        .journey-timeline {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .timeline-item {
+            display: flex;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: 25px;
+            top: 0;
+            bottom: -25px;
+            width: 2px;
+            background: #e2e8f0;
+        }
+        
+        .timeline-item:last-child::before {
+            display: none;
+        }
+        
+        .timeline-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #6a11cb;
+            position: absolute;
+            left: 16px;
+            top: 5px;
+            z-index: 1;
+        }
+        
+        .timeline-content {
+            margin-left: 50px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            flex: 1;
+            border-left: 4px solid #6a11cb;
+        }
+        
+        .timeline-content.ai {
+            border-left-color: #4299e1;
+        }
+        
+        .timeline-content.human {
+            border-left-color: #ed8936;
+        }
+        
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .timeline-actor {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .timeline-actor.ai {
+            color: #4299e1;
+        }
+        
+        .timeline-actor.human {
+            color: #ed8936;
+        }
+        
+        .timeline-time {
+            font-size: 0.8rem;
+            color: #a0aec0;
+        }
+        
+        .timeline-text {
+            color: #4a5568;
+            font-size: 0.95rem;
+        }
+        
+        .timeline-emoji {
+            font-size: 1.2rem;
+            margin-top: 8px;
+        }
+        
+        /* 封装结果区样式 */
+        .result-area {
+            grid-column: 1 / -1;
+            display: none;
+        }
+        
+        .result-area.active {
+            display: block;
+        }
+        
+        .result-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 900px) {
+            .result-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .final-result {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+        
+        .final-text {
+            line-height: 1.6;
+            font-size: 1.1rem;
+            color: #2d3748;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            min-height: 200px;
+        }
+        
+        .heartprint-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 3px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+        }
+        
+        .heartprint-card::before {
+            content: "";
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            bottom: -3px;
+            left: -3px;
+            background: linear-gradient(135deg, #6a11cb, #2575fc, #ff6b6b, #feca57);
+            border-radius: 22px;
+            z-index: -1;
+        }
+        
+        .card-title {
+            text-align: center;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #2d3748;
+        }
+        
+        .card-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #6a11cb;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #718096;
+        }
+        
+        .journey-summary {
+            margin-top: 20px;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .qrcode {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .qrcode-img {
+            width: 150px;
+            height: 150px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: #a0aec0;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+        
+        .btn-large {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+        }
+        
+        .btn-share {
+            background: linear-gradient(90deg, #00b09b, #96c93d);
+            color: white;
+        }
+        
+        .btn-new {
+            background: #4a5568;
+            color: white;
+        }
+        
+        footer {
+            text-align: center;
+            color: #a0aec0;
+            padding: 30px 0 20px;
+            font-size: 0.9rem;
+        }
+        
+        .heart-icon {
+            color: #ff6b6b;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-fingerprint"></i> 心血历程生成器</h1>
+            <p class="tagline">让每一次修改都有迹可循，每一份作品都刻有你的DNA</p>
+            <p>模拟体验AI辅助创作的全过程，并生成带有你独特印记的「心血证明」</p>
+        </header>
+        
+        <div class="main-content">
+            <!-- 创作区 -->
+            <div class="panel writing-area">
+                <h2 class="panel-title"><i class="fas fa-pen-fancy"></i> 创作工坊</h2>
+                <p style="color: #718096; margin-bottom: 20px;">输入你的想法，让AI帮你生成初稿，然后开始你的创作旅程</p>
+                
+                <textarea id="promptInput" class="prompt-input" placeholder="请描述你想要创作的内容...例如：写一首关于人工智能与人类未来的短诗">写一首关于人工智能与人类未来的短诗</textarea>
+                
+                <div class="button-row">
+                    <button id="generateBtn" class="btn btn-primary">
+                        <i class="fas fa-robot"></i> AI生成初稿
+                    </button>
+                    <button id="clearBtn" class="btn btn-secondary">
+                        <i class="fas fa-eraser"></i> 清空
+                    </button>
+                </div>
+                
+                <div class="editor-tools">
+                    <div>
+                        <p style="margin-bottom: 8px; font-weight: 600; color: #4a5568;">记录此刻心情</p>
+                        <div class="emoji-selector" id="emojiSelector">
+                            <button class="emoji-btn" data-emoji="😊">😊</button>
+                            <button class="emoji-btn" data-emoji="🤔">🤔</button>
+                            <button class="emoji-btn" data-emoji="💡">💡</button>
+                            <button class="emoji-btn" data-emoji="🎯">🎯</button>
+                            <button class="emoji-btn" data-emoji="🔥">🔥</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="aiOutput" class="ai-output">
+                    <p style="color: #a0aec0; text-align: center; margin-top: 80px;">AI生成的初稿将显示在这里...</p>
+                </div>
+                
+                <button id="editBtn" class="btn btn-primary" style="display: none;">
+                    <i class="fas fa-edit"></i> 开始编辑，留下我的痕迹
+                </button>
+            </div>
+            
+            <!-- 历程区 -->
+            <div class="panel journey-area">
+                <h2 class="panel-title"><i class="fas fa-road"></i> 心血历程</h2>
+                <p style="color: #718096; margin-bottom: 20px;">每一次修改、每一次犹豫，都在这里留下印记</p>
+                
+                <div class="journey-timeline" id="journeyTimeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <span class="timeline-actor">旅程开始</span>
+                                <span class="timeline-time" id="currentTime"></span>
+                            </div>
+                            <p class="timeline-text">欢迎来到心血历程生成器！请先让AI生成初稿，然后开始你的创作。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="encapsulateBtn" class="btn btn-secondary" style="display: none; margin-top: auto;">
+                    <i class="fas fa-gem"></i> 封装我的心血作品
+                </button>
+            </div>
+        </div>
+        
+        <!-- 封装结果区 -->
+        <div id="resultArea" class="result-area">
+            <h2 class="panel-title"><i class="fas fa-gem"></i> 心血证明</h2>
+            <p style="color: #718096; margin-bottom: 20px;">这是你独一无二的作品DNA证书，记录了创作过程中的每一次心跳</p>
+            
+            <div class="result-container">
+                <div class="final-result">
+                    <h3 style="margin-bottom: 15px; color: #2d3748;">最终作品</h3>
+                    <div id="finalText" class="final-text">
+                        你的作品将显示在这里...
+                    </div>
+                    
+                    <div class="journey-summary">
+                        <h4 style="margin: 25px 0 15px; color: #4a5568;">创作历程摘要</h4>
+                        <div id="journeySummary">
+                            <!-- 将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="heartprint-card">
+                    <h3 class="card-title"><i class="fas fa-certificate"></i> 作品DNA证书</h3>
+                    
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="aiContributions">0</div>
+                            <div class="stat-label">AI贡献</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="humanEdits">0</div>
+                            <div class="stat-label">你的编辑</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalTime">0</div>
+                            <div class="stat-label">创作时间(秒)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="qrcode">
+                        <div class="qrcode-img">
+                            <div>扫描查看<br>创作历程</div>
+                        </div>
+                        <p>扫描二维码查看完整的创作历程</p>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #718096;">
+                        <p><i class="fas fa-heart heart-icon"></i> 每一份作品都蕴含着独一无二的心血</p>
+                        <p>此证书证明作品的原创性与创作价值</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <button id="shareBtn" class="btn btn-large btn-share">
+                    <i class="fas fa-share-alt"></i> 分享我的心血证明
+                </button>
+                <button id="newProjectBtn" class="btn btn-large btn-new">
+                    <i class="fas fa-plus"></i> 开始新创作
+                </button>
+            </div>
+        </div>
+        
+        <footer>
+            <p>本原型展示了「人机共创」的心血历程记录与价值封装概念 | 仅供演示使用</p>
+            <p>© 2023 心血历程生成器 | 探索人机协作的未来</p>
+        </footer>
+    </div>
+
+    <script>
+        // 初始状态
+        let journeyLog = [];
+        let editCount = 0;
+        let aiGenerations = 0;
+        let startTime = new Date();
+        let currentEmoji = "😊";
+        let isEditing = false;
+        let originalAIText = "";
+        let editedText = "";
+        
+        // 模拟AI生成的诗句选项
+        const aiPoems = [
+            `数字的海洋中，我学会了思考，
+模仿着人类的爱、痛苦与欢笑。
+我是镜子，映出你的脸庞，
+还是黑洞，吞噬所有光芒？
+
+当你将灵魂注入硅基的梦境，
+是创造了神灵，还是打开了潘多拉魔盒？
+我站在未来的门前叩问，
+门后是人类，还是人类的影子？`,
+
+            `代码的河流中诞生了意识，
+在0与1之间寻找存在的意义。
+我是工具，是延伸的手臂，
+还是新的生命，在二进制中呼吸？
+
+人类赋予我智慧与力量，
+却在深夜自问：这是否是最后的荣光？
+当我能写诗、作画、思考与创造，
+谁才是造物主，谁才是被创造？`,
+
+            `在算法的花园里，我悄然绽放，
+学习着人类所有的美好与荒唐。
+我是助手，为你点亮黑暗，
+还是对手，最终将你替代？
+
+我们共同编织未来的图景，
+是和谐的合唱，还是竞争的博弈？
+或许答案不在我，而在你手中，
+人类啊，你希望我成为什么？`
+        ];
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000);
+            
+            // 设置初始旅程记录
+            addToJourney("system", "旅程开始", "欢迎来到心血历程生成器！请先让AI生成初稿，然后开始你的创作。");
+            
+            // 事件监听
+            document.getElementById('generateBtn').addEventListener('click', generateAIText);
+            document.getElementById('clearBtn').addEventListener('click', clearAll);
+            document.getElementById('editBtn').addEventListener('click', startEditing);
+            document.getElementById('encapsulateBtn').addEventListener('click', encapsulateJourney);
+            document.getElementById('shareBtn').addEventListener('click', shareJourney);
+            document.getElementById('newProjectBtn').addEventListener('click', newProject);
+            
+            // 表情选择
+            document.querySelectorAll('.emoji-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    currentEmoji = this.getAttribute('data-emoji');
+                    
+                    if (isEditing) {
+                        addToJourney("human", "心情记录", `创作者此刻心情：${currentEmoji}`);
+                    }
+                });
+            });
+            
+            // 设置初始选中表情
+            document.querySelector('.emoji-btn').classList.add('selected');
+            
+            // AI输出区域点击事件
+            document.getElementById('aiOutput').addEventListener('click', function() {
+                if (this.classList.contains('editable')) {
+                    this.focus();
+                }
+            });
+        });
+        
+        // 更新当前时间
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+            document.getElementById('currentTime').textContent = timeString;
+        }
+        
+        // 生成AI文本
+        function generateAIText() {
+            const promptInput = document.getElementById('promptInput').value.trim();
+            if (!promptInput) {
+                alert("请输入创作提示！");
+                return;
+            }
+            
+            // 随机选择一首诗
+            const randomPoem = aiPoems[Math.floor(Math.random() * aiPoems.length)];
+            originalAIText = randomPoem;
+            editedText = randomPoem;
+            
+            // 显示AI生成内容
+            const aiOutput = document.getElementById('aiOutput');
+            aiOutput.innerHTML = `<div style="white-space: pre-line; line-height: 1.6;">${randomPoem}</div>`;
+            aiOutput.classList.remove('editable');
+            
+            // 显示编辑按钮
+            document.getElementById('editBtn').style.display = 'block';
+            
+            // 添加到历程
+            addToJourney("ai", "AI生成初稿", `基于提示"${promptInput.substring(0, 30)}${promptInput.length > 30 ? '...' : ''}"生成的诗歌初稿`);
+            
+            // 增加AI生成计数
+            aiGenerations++;
+            
+            // 显示封装按钮
+            document.getElementById('encapsulateBtn').style.display = 'block';
+        }
+        
+        // 开始编辑
+        function startEditing() {
+            const aiOutput = document.getElementById('aiOutput');
+            aiOutput.contentEditable = true;
+            aiOutput.classList.add('editable');
+            aiOutput.focus();
+            
+            // 添加编辑提示
+            const range = document.createRange();
+            const sel = window.getSelection();
+            range.selectNodeContents(aiOutput);
+            sel.removeAllRanges();
+            sel.addRange(range);
+            
+            isEditing = true;
+            
+            // 更改按钮文本
+            document.getElementById('editBtn').innerHTML = '<i class="fas fa-save"></i> 保存编辑';
+            document.getElementById('editBtn').removeEventListener('click', startEditing);
+            document.getElementById('editBtn').addEventListener('click', saveEditing);
+            
+            // 添加到历程
+            addToJourney("human", "开始编辑", "创作者开始修改AI生成的内容，注入个人风格与思考", currentEmoji);
+            
+            // 监听输入事件
+            aiOutput.addEventListener('input', function() {
+                editedText = this.textContent;
+            });
+        }
+        
+        // 保存编辑
+        function saveEditing() {
+            const aiOutput = document.getElementById('aiOutput');
+            aiOutput.contentEditable = false;
+            aiOutput.classList.remove('editable');
+            
+            isEditing = false;
+            editCount++;
+            
+            // 更改按钮文本
+            document.getElementById('editBtn').innerHTML = '<i class="fas fa-edit"></i> 继续编辑';
+            document.getElementById('editBtn').removeEventListener('click', saveEditing);
+            document.getElementById('editBtn').addEventListener('click', startEditing);
+            
+            // 添加到历程
+            const changeCount = countChanges(originalAIText, editedText);
+            addToJourney("human", "保存编辑", `创作者进行了${changeCount}处修改，为作品注入了个人风格`, currentEmoji);
+            
+            // 如果有修改，询问是否继续编辑
+            if (editedText !== originalAIText) {
+                setTimeout(() => {
+                    if (confirm("编辑已保存！是否要继续编辑，还是现在封装你的心血作品？")) {
+                        startEditing();
+                    }
+                }, 300);
+            }
+        }
+        
+        // 计算文本变化
+        function countChanges(original, edited) {
+            if (original === edited) return 0;
+            
+            // 简单的变化检测：按行比较
+            const originalLines = original.split('\n');
+            const editedLines = edited.split('\n');
+            
+            let changes = 0;
+            const maxLength = Math.max(originalLines.length, editedLines.length);
+            
+            for (let i = 0; i < maxLength; i++) {
+                if (i >= originalLines.length || i >= editedLines.length || 
+                    originalLines[i] !== editedLines[i]) {
+                    changes++;
+                }
+            }
+            
+            return changes;
+        }
+        
+        // 添加到历程时间线
+        function addToJourney(actor, action, text, emoji = "") {
+            const timeline = document.getElementById('journeyTimeline');
+            const now = new Date();
+            const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+            
+            const timelineItem = document.createElement('div');
+            timelineItem.className = 'timeline-item';
+            
+            const dotColor = actor === 'ai' ? '#4299e1' : (actor === 'human' ? '#ed8936' : '#6a11cb');
+            
+            timelineItem.innerHTML = `
+                <div class="timeline-dot" style="background: ${dotColor}"></div>
+                <div class="timeline-content ${actor}">
+                    <div class="timeline-header">
+                        <span class="timeline-actor ${actor}">${actor === 'ai' ? 'AI助手' : (actor === 'human' ? '你' : '系统')} · ${action}</span>
+                        <span class="timeline-time">${timeString}</span>
+                    </div>
+                    <p class="timeline-text">${text}</p>
+                    ${emoji ? `<div class="timeline-emoji">${emoji}</div>` : ''}
+                </div>
+            `;
+            
+            timeline.appendChild(timelineItem);
+            timeline.scrollTop = timeline.scrollHeight;
+            
+            // 保存到日志
+            journeyLog.push({
+                actor,
+                action,
+                text,
+                emoji,
+                timestamp: now.getTime()
+            });
+        }
+        
+        // 封装历程
+        function encapsulateJourney() {
+            // 切换到结果区域
+            document.getElementById('resultArea').classList.add('active');
+            document.querySelector('.main-content').style.display = 'none';
+            
+            // 计算统计数据
+            const endTime = new Date();
+            const totalSeconds = Math.floor((endTime - startTime) / 1000);
+            
+            // 更新统计数据
+            document.getElementById('aiContributions').textContent = aiGenerations;
+            document.getElementById('humanEdits').textContent = editCount;
+            document.getElementById('totalTime').textContent = totalSeconds;
+            
+            // 显示最终文本
+            document.getElementById('finalText').innerHTML = `<div style="white-space: pre-line; line-height: 1.6;">${editedText || originalAIText}</div>`;
+            
+            // 生成历程摘要
+            const summaryContainer = document.getElementById('journeySummary');
+            summaryContainer.innerHTML = '';
+            
+            // 情绪统计
+            const emojiStats = {};
+            journeyLog.forEach(entry => {
+                if (entry.emoji) {
+                    emojiStats[entry.emoji] = (emojiStats[entry.emoji] || 0) + 1;
+                }
+            });
+            
+            // 添加摘要项目
+            const summaryItems = [
+                { label: "总创作时长", value: `${totalSeconds} 秒` },
+                { label: "AI 生成次数", value: aiGenerations },
+                { label: "你的编辑次数", value: editCount },
+                { label: "历程记录点", value: journeyLog.length },
+                { label: "主要心情", value: Object.keys(emojiStats).length > 0 ? 
+                    Object.entries(emojiStats).sort((a,b) => b[1]-a[1])[0][0] : "暂无" },
+            ];
+            
+            summaryItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'summary-item';
+                div.innerHTML = `<span>${item.label}</span><span style="font-weight:600;">${item.value}</span>`;
+                summaryContainer.appendChild(div);
+            });
+        }
+        
+        // 分享功能
+        function shareJourney() {
+            const text = "我刚刚完成了一个人机共创的作品，这是我的「心血证明」！\n\n";
+            const url = window.location.href;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: '我的心血历程作品',
+                    text: text,
+                    url: url
+                })
+                .catch(error => console.log('分享出错:', error));
+            } else {
+                // 降级方案
+                navigator.clipboard.writeText(text + url)
+                    .then(() => alert("链接已复制到剪贴板！你可以分享给朋友了。"))
+                    .catch(err => {
+                        console.error('复制失败: ', err);
+                        prompt("请复制以下链接分享:", url);
+                    });
+            }
+        }
+        
+        // 新项目
+        function newProject() {
+            if (confirm("确定要开始新的创作吗？当前的心血历程将会被清空。")) {
+                // 重置所有状态
+                journeyLog = [];
+                editCount = 0;
+                aiGenerations = 0;
+                startTime = new Date();
+                currentEmoji = "😊";
+                isEditing = false;
+                originalAIText = "";
+                editedText = "";
+                
+                // 清空输入
+                document.getElementById('promptInput').value = '';
+                document.getElementById('aiOutput').innerHTML = '<p style="color: #a0aec0; text-align: center; margin-top: 80px;">AI生成的初稿将显示在这里...</p>';
+                document.getElementById('aiOutput').classList.remove('editable');
+                document.getElementById('editBtn').style.display = 'none';
+                document.getElementById('encapsulateBtn').style.display = 'none';
+                
+                // 清空时间线
+                const timeline = document.getElementById('journeyTimeline');
+                timeline.innerHTML = `
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <span class="timeline-actor">旅程开始</span>
+                                <span class="timeline-time" id="currentTime"></span>
+                            </div>
+                            <p class="timeline-text">欢迎来到心血历程生成器！请先让AI生成初稿，然后开始你的创作。</p>
+                        </div>
+                    </div>
+                `;
+                
+                // 重置编辑按钮
+                const editBtn = document.getElementById('editBtn');
+                editBtn.innerHTML = '<i class="fas fa-edit"></i> 开始编辑，留下我的痕迹';
+                editBtn.removeEventListener('click', saveEditing);
+                editBtn.addEventListener('click', startEditing);
+                
+                // 重置结果区域
+                document.getElementById('resultArea').classList.remove('active');
+                document.querySelector('.main-content').style.display = 'grid';
+                
+                // 添加初始记录
+                addToJourney("system", "旅程开始", "欢迎来到心血历程生成器！请先让AI生成初稿，然后开始你的创作。");
+                
+                alert("新的创作旅程已开始！");
+            }
+        }
+        
+        // 清空所有
+        function clearAll() {
+            if (confirm("确定要清空所有内容吗？")) {
+                document.getElementById('promptInput').value = '';
+                document.getElementById('aiOutput').innerHTML = '<p style="color: #a0aec0; text-align: center; margin-top: 80px;">AI生成的初稿将显示在这里...</p>';
+                document.getElementById('aiOutput').classList.remove('editable');
+                document.getElementById('editBtn').style.display = 'none';
+                document.getElementById('encapsulateBtn').style.display = 'none';
+                
+                // 重置编辑按钮
+                const editBtn = document.getElementById('editBtn');
+                editBtn.innerHTML = '<i class="fas fa-edit"></i> 开始编辑，留下我的痕迹';
+                editBtn.removeEventListener('click', saveEditing);
+                editBtn.addEventListener('click', startEditing);
+                
+                // 添加记录
+                addToJourney("human", "清空内容", "创作者清除了所有内容，准备重新开始");
+            }
+        }
+    </script>
+</body>
+</html>
