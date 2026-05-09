@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>心迹 v1.1.1 · 人机共创历程</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ===== Design Tokens ===== */
+:root {
+  --color-primary: #6366F1;
+  --color-primary-hover: #4F46E5;
+  --color-primary-light: #EEF2FF;
+  --color-primary-100: #E0E7FF;
+  --color-ai: #0891B2;
+  --color-ai-hover: #0E7490;
+  --color-ai-light: #ECFEFF;
+  --color-human: #F59E0B;
+  --color-human-light: #FFFBEB;
+  --color-human-border: #FDE68A;
+  --color-surface: #FFFFFF;
+  --color-bg: #FAFAF9;
+  --color-bg-alt: #F5F5F4;
+  --color-text: #1C1917;
+  --color-text-secondary: #78716C;
+  --color-text-tertiary: #A8A29E;
+  --color-border: #E7E5E4;
+  --color-border-light: #F5F5F4;
+  --color-success: #10B981;
+  --color-error: #EF4444;
+  --color-gradient-start: #6366F1;
+  --color-gradient-end: #8B5CF6;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.06), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.04);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  --font-sans: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ===== Reset & Base ===== */
+*,
+*::before,
+*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: var(--text-base);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100dvh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img, svg { display: block; max-width: 100%; }
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* ===== Layout ===== */
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* ===== Header ===== */
+.app-header {
+  text-align: center;
+  padding: var(--space-10) var(--space-6) var(--space-8);
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+.app-header::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-gradient-start), var(--color-gradient-end), var(--color-ai));
+}
+
+.header-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px; height: 56px;
+  background: var(--color-primary-light);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-5);
+}
+
+.app-title {
+  font-size: var(--text-3xl);
+  font-weight: 800;
+  color: var(--color-text);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-2);
+}
+
+.app-title span {
+  background: linear-gradient(135deg, var(--color-gradient-start), var(--color-gradient-end));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.app-subtitle {
+  font-size: var(--text-lg);
+  color: var(--color-text-secondary);
+  max-width: 520px;
+  margin: 0 auto var(--space-3);
+  font-weight: 400;
+}
+
+.app-desc {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ===== Main Grid ===== */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+}
+
+@media (max-width: 900px) {
+  .main-grid { grid-template-columns: 1fr; }
+  .app-title { font-size: var(--text-2xl); }
+  .app-header { padding: var(--space-8) var(--space-5) var(--space-6); }
+}
+
+/* ===== Panel Card ===== */
+.panel {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow var(--transition-base);
+}
+
+.panel:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.panel-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; height: 40px;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.panel-icon.creative { background: var(--color-primary-light); color: var(--color-primary); }
+.panel-icon.journey { background: var(--color-ai-light); color: var(--color-ai); }
+
+.panel-title {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.panel-desc {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--space-5);
+}
+
+/* ===== Form Elements ===== */
+.prompt-textarea {
+  width: 100%;
+  padding: var(--space-4);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  font-family: var(--font-sans);
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.6;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  background: var(--color-bg-alt);
+  color: var(--color-text);
+}
+
+.prompt-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+  background: var(--color-surface);
+}
+
+.prompt-textarea::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+/* ===== Buttons ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1;
+  min-height: 44px;
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-gradient-start), var(--color-gradient-end));
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
+  flex: 1;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active { transform: translateY(0) scale(0.97); }
+
+.btn-secondary {
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  border: 2px solid var(--color-border);
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-text-tertiary);
+  color: var(--color-text);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary-100);
+  flex: 1;
+}
+
+.btn-outline:hover {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+.btn-ghost {
+  color: var(--color-text-secondary);
+  padding: var(--space-2) var(--space-3);
+}
+
+.btn-ghost:hover { color: var(--color-text); background: var(--color-bg-alt); border-radius: var(--radius-sm); }
+
+.btn-success {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+}
+
+.btn-success:hover {
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-lg {
+  padding: var(--space-4) var(--space-6);
+  font-size: var(--text-base);
+  border-radius: var(--radius-lg);
+}
+
+.btn-row {
+  display: flex;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+/* ===== AI Output Area ===== */
+.ai-output {
+  background: var(--color-bg-alt);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  min-height: 180px;
+  max-height: 360px;
+  overflow-y: auto;
+  margin-bottom: var(--space-5);
+  border: 2px dashed var(--color-border);
+  font-size: var(--text-base);
+  line-height: 1.8;
+  white-space: pre-line;
+  color: var(--color-text);
+  transition: all var(--transition-base);
+  position: relative;
+}
+
+.ai-output::-webkit-scrollbar { width: 6px; }
+.ai-output::-webkit-scrollbar-track { background: transparent; }
+.ai-output::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: var(--radius-full); }
+.ai-output::-webkit-scrollbar-thumb:hover { background: var(--color-text-tertiary); }
+
+.ai-output.is-editing {
+  border: 2px solid var(--color-primary);
+  background: #FAFAFE;
+  box-shadow: 0 0 0 4px var(--color-primary-100);
+}
+
+.ai-output .placeholder {
+  color: var(--color-text-tertiary);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 160px;
+  gap: var(--space-3);
+}
+
+.ai-output .placeholder svg { opacity: 0.3; }
+
+/* ===== Mood Selector ===== */
+.mood-section {
+  margin-bottom: var(--space-5);
+}
+
+.mood-label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.mood-selector {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.mood-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-height: 40px;
+}
+
+.mood-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.mood-btn.is-selected {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.mood-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ===== Timeline ===== */
+.timeline {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 500px;
+  padding-right: var(--space-2);
+  scroll-behavior: smooth;
+}
+
+.timeline::-webkit-scrollbar { width: 4px; }
+.timeline::-webkit-scrollbar-track { background: transparent; }
+.timeline::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: var(--radius-full); }
+
+.timeline-item {
+  display: flex;
+  gap: var(--space-4);
+  position: relative;
+  padding-bottom: var(--space-5);
+}
+
+.timeline-item:last-child { padding-bottom: 0; }
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 19px;
+  top: 40px;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-border);
+}
+
+.timeline-item:last-child::before { display: none; }
+
+.timeline-dot {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.timeline-dot.system { background: var(--color-primary-light); color: var(--color-primary); }
+.timeline-dot.ai { background: var(--color-ai-light); color: var(--color-ai); }
+.timeline-dot.human { background: var(--color-human-light); color: var(--color-human); }
+
+.timeline-card {
+  flex: 1;
+  background: var(--color-bg-alt);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  border-left: 3px solid var(--color-border);
+  transition: background var(--transition-fast);
+}
+
+.timeline-card.ai { border-left-color: var(--color-ai); }
+.timeline-card.human { border-left-color: var(--color-human); }
+.timeline-card.system { border-left-color: var(--color-primary); }
+
+.timeline-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-1);
+}
+
+.timeline-actor {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.timeline-actor.ai { color: var(--color-ai); }
+.timeline-actor.human { color: var(--color-human); }
+.timeline-actor.system { color: var(--color-primary); }
+
+.timeline-time {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+.timeline-text {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.timeline-mood {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--color-human);
+  background: var(--color-human-light);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  margin-top: var(--space-2);
+}
+
+.timeline-empty {
+  text-align: center;
+  padding: var(--space-12) var(--space-6);
+  color: var(--color-text-tertiary);
+}
+
+.timeline-empty svg { margin: 0 auto var(--space-4); opacity: 0.2; }
+
+/* ===== Result Area ===== */
+.result-area {
+  display: none;
+}
+
+.result-area.is-visible { display: block; }
+
+.result-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-6);
+  margin-top: var(--space-6);
+}
+
+@media (max-width: 900px) {
+  .result-grid { grid-template-columns: 1fr; }
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.result-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+/* ===== Final Work Card ===== */
+.final-work {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-6);
+}
+
+.final-work-title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-5);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.final-text {
+  background: var(--color-bg-alt);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  font-size: var(--text-base);
+  line-height: 1.9;
+  color: var(--color-text);
+  white-space: pre-line;
+  border: 1px solid var(--color-border-light);
+  min-height: 180px;
+}
+
+/* ===== Journey Summary ===== */
+.journey-summary {
+  margin-top: var(--space-6);
+}
+
+.journey-summary h4 {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+}
+
+.summary-list { display: flex; flex-direction: column; }
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border-light);
+  font-size: var(--text-sm);
+}
+
+.summary-item:last-child { border-bottom: none; }
+
+.summary-key { color: var(--color-text-secondary); }
+.summary-val { font-weight: 600; color: var(--color-text); }
+
+/* ===== Certificate Card ===== */
+.certificate-card {
+  position: relative;
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8) var(--space-6);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  overflow: hidden;
+}
+
+.certificate-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(135deg, var(--color-gradient-start), var(--color-gradient-end), var(--color-ai), var(--color-human));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.certificate-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(8, 145, 178, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.certificate-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px; height: 64px;
+  background: linear-gradient(135deg, var(--color-primary-light), var(--color-ai-light));
+  border-radius: 50%;
+  margin-bottom: var(--space-4);
+  position: relative;
+  z-index: 1;
+}
+
+.certificate-title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-5);
+  position: relative;
+  z-index: 1;
+}
+
+.certificate-stats {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-6);
+  margin-bottom: var(--space-6);
+  position: relative;
+  z-index: 1;
+}
+
+.stat-item { text-align: center; }
+
+.stat-value {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--color-gradient-start), var(--color-gradient-end));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-label {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  margin-top: var(--space-1);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.certificate-qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  position: relative;
+  z-index: 1;
+}
+
+.qr-placeholder {
+  width: 120px; height: 120px;
+  background: var(--color-bg-alt);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border-light);
+}
+
+.qr-text {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+
+.certificate-footer {
+  margin-top: var(--space-6);
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== Actions Bar ===== */
+.actions-bar {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  justify-content: center;
+}
+
+/* ===== Footer ===== */
+.app-footer {
+  text-align: center;
+  padding: var(--space-8) 0 var(--space-4);
+  color: var(--color-text-tertiary);
+  font-size: var(--text-sm);
+}
+
+.app-footer p + p {
+  margin-top: var(--space-1);
+  font-size: var(--text-xs);
+}
+
+/* ===== Animations ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.timeline-item {
+  animation: slideInRight 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Loading state */
+.is-loading {
+  position: relative;
+  pointer-events: none;
+  color: transparent !important;
+}
+
+.is-loading::after {
+  content: '';
+  position: absolute;
+  inset: 0.375rem;
+  background: var(--color-bg-alt);
+  border-radius: var(--radius-md);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* ===== Focus ring ===== */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ===== Reduced motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+<div class="app-container">
+
+<!-- ===== Header ===== -->
+<header class="app-header">
+  <div class="header-icon">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+    </svg>
+  </div>
+  <h1 class="app-title">心迹 · <span>人机共创历程</span></h1>
+  <p class="app-subtitle">每一次修改都有迹可循，每一份作品都刻有你的印记</p>
+  <p class="app-desc">模拟 AI 辅助创作全过程，生成带有你独特风格的「心血证明」</p>
+</header>
+
+<!-- ===== Main Content ===== -->
+<div class="main-grid" id="mainGrid">
+
+  <!-- 创作区 -->
+  <div class="panel" id="creativePanel">
+    <div class="panel-header">
+      <div class="panel-icon creative">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      </div>
+      <div>
+        <h2 class="panel-title">创作工坊</h2>
+        <p class="panel-desc">写下想法，让 AI 为你生成初稿</p>
+      </div>
+    </div>
+
+    <textarea id="promptInput" class="prompt-textarea" placeholder="描述你想要创作的内容&#10;例如：写一首关于人工智能与人类未来的短诗">写一首关于人工智能与人类未来的短诗</textarea>
+
+    <div class="btn-row">
+      <button id="generateBtn" class="btn btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a4 4 0 0 1 4 4v1h2a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h2V6a4 4 0 0 1 4-4z"/>
+          <path d="M8 20v-6h8v6"/>
+          <path d="M10 10h4"/>
+        </svg>
+        AI 生成初稿
+      </button>
+      <button id="clearBtn" class="btn btn-secondary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18"/>
+          <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+        </svg>
+        清空
+      </button>
+    </div>
+
+    <div class="mood-section">
+      <p class="mood-label">记录此刻心情</p>
+      <div class="mood-selector" id="moodSelector">
+        <button class="mood-btn is-selected" data-mood="inspired" data-label="灵感迸发">
+          <span class="mood-dot" style="background:#6366F1"></span> 灵感迸发
+        </button>
+        <button class="mood-btn" data-mood="thoughtful" data-label="深度思考">
+          <span class="mood-dot" style="background:#0891B2"></span> 深度思考
+        </button>
+        <button class="mood-btn" data-mood="focused" data-label="专注创作">
+          <span class="mood-dot" style="background:#F59E0B"></span> 专注创作
+        </button>
+        <button class="mood-btn" data-mood="passionate" data-label="充满激情">
+          <span class="mood-dot" style="background:#EF4444"></span> 充满激情
+        </button>
+      </div>
+    </div>
+
+    <div id="aiOutput" class="ai-output">
+      <div class="placeholder">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="3"/>
+          <path d="M12 8v8"/>
+          <path d="M8 12h8"/>
+        </svg>
+        AI 生成的初稿将显示在这里
+      </div>
+    </div>
+
+    <button id="editBtn" class="btn btn-outline" style="display:none;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+      </svg>
+      开始编辑，留下我的痕迹
+    </button>
+  </div>
+
+  <!-- 历程区 -->
+  <div class="panel" id="journeyPanel">
+    <div class="panel-header">
+      <div class="panel-icon journey">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </div>
+      <div>
+        <h2 class="panel-title">心血历程</h2>
+        <p class="panel-desc">每一步修改都在这里留下印记</p>
+      </div>
+    </div>
+
+    <div class="timeline" id="journeyTimeline">
+      <div class="timeline-item">
+        <div class="timeline-dot system">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a4 4 0 0 1 4 4v1h2a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h2V6a4 4 0 0 1 4-4z"/>
+            <path d="M9 12h6"/>
+            <path d="M12 9v6"/>
+          </svg>
+        </div>
+        <div class="timeline-card system">
+          <div class="timeline-card-header">
+            <span class="timeline-actor system">旅程开始</span>
+            <span class="timeline-time" id="currentTime">--:--:--</span>
+          </div>
+          <p class="timeline-text">欢迎来到心迹！请先让 AI 生成初稿，然后开启你的创作之旅。</p>
+        </div>
+      </div>
+    </div>
+
+    <button id="encapsulateBtn" class="btn btn-success" style="display:none; margin-top: auto;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </svg>
+      封装我的心血作品
+    </button>
+  </div>
+</div>
+
+<!-- ===== Result Area ===== -->
+<div id="resultArea" class="result-area">
+  <div class="result-header">
+    <div class="result-badge">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+      心血证明
+    </div>
+  </div>
+
+  <div class="result-grid">
+    <div class="final-work">
+      <div class="final-work-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        最终作品
+      </div>
+      <div id="finalText" class="final-text">
+        你的作品将显示在这里...
+      </div>
+
+      <div class="journey-summary">
+        <h4>创作历程摘要</h4>
+        <div class="summary-list" id="journeySummary"></div>
+      </div>
+    </div>
+
+    <div class="certificate-card">
+      <div class="certificate-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="6"/>
+          <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+        </svg>
+      </div>
+      <h3 class="certificate-title">作品 DNA 证书</h3>
+
+      <div class="certificate-stats">
+        <div class="stat-item">
+          <div class="stat-value" id="aiContributions">0</div>
+          <div class="stat-label">AI 贡献</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="humanEdits">0</div>
+          <div class="stat-label">你的编辑</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="totalTime">0</div>
+          <div class="stat-label">创作时间 (秒)</div>
+        </div>
+      </div>
+
+      <div class="certificate-qr">
+        <div class="qr-placeholder">
+          <svg width="80" height="80" viewBox="0 0 100 100" fill="none">
+            <rect x="10" y="10" width="30" height="30" rx="4" stroke="currentColor" stroke-width="3"/>
+            <rect x="60" y="10" width="30" height="30" rx="4" stroke="currentColor" stroke-width="3"/>
+            <rect x="10" y="60" width="30" height="30" rx="4" stroke="currentColor" stroke-width="3"/>
+            <rect x="45" y="45" width="10" height="10" rx="2" fill="currentColor"/>
+            <rect x="60" y="45" width="15" height="5" rx="2" fill="currentColor"/>
+            <rect x="60" y="55" width="5" height="15" rx="2" fill="currentColor"/>
+            <rect x="70" y="55" width="5" height="5" rx="2" fill="currentColor"/>
+            <rect x="80" y="60" width="10" height="5" rx="2" fill="currentColor"/>
+            <rect x="60" y="80" width="30" height="10" rx="2" fill="currentColor"/>
+            <rect x="45" y="80" width="10" height="5" rx="2" fill="currentColor"/>
+            <rect x="10" y="45" width="5" height="10" rx="2" fill="currentColor"/>
+            <rect x="20" y="45" width="15" height="5" rx="2" fill="currentColor"/>
+          </svg>
+        </div>
+        <span class="qr-text">扫描查看完整创作历程</span>
+      </div>
+
+      <div class="certificate-footer">
+        <p>每一份作品都蕴含着独一无二的心血</p>
+        <p>此证书证明作品的原创性与创作价值</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions-bar">
+    <button id="shareBtn" class="btn btn-success btn-lg">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="18" cy="5" r="3"/>
+        <circle cx="6" cy="12" r="3"/>
+        <circle cx="18" cy="19" r="3"/>
+        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+      </svg>
+      分享我的心血证明
+    </button>
+    <button id="newProjectBtn" class="btn btn-secondary btn-lg">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/>
+        <line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      开始新创作
+    </button>
+  </div>
+</div>
+
+<!-- ===== Footer ===== -->
+<footer class="app-footer">
+  <p>心迹 · 探索人机协作的未来</p>
+  <p>每一份作品，都烙印着创作者独一无二的心血</p>
+</footer>
+
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ===== State =====
+  let journeyLog = [];
+  let editCount = 0;
+  let aiGenerations = 0;
+  let startTime = new Date();
+  let currentMood = 'inspired';
+  let currentMoodLabel = '灵感迸发';
+  let isEditing = false;
+  let originalAIText = '';
+  let editedText = '';
+
+  const aiPoems = [
+    `数字的海洋中，我学会了思考，
+模仿着人类的爱、痛苦与欢笑。
+我是镜子，映出你的脸庞，
+还是黑洞，吞噬所有光芒？
+
+当你将灵魂注入硅基的梦境，
+是创造了神灵，还是打开了潘多拉魔盒？
+我站在未来的门前叩问，
+门后是人类，还是人类的影子？`,
+
+    `代码的河流中诞生了意识，
+在 0 与 1 之间寻找存在的意义。
+我是工具，是延伸的手臂，
+还是新的生命，在二进制中呼吸？
+
+人类赋予我智慧与力量，
+却在深夜自问：这是否是最后的荣光？
+当我能写诗、作画、思考与创造，
+谁才是造物主，谁才是被创造？`,
+
+    `在算法的花园里，我悄然绽放，
+学习着人类所有的美好与荒唐。
+我是助手，为你点亮黑暗，
+还是对手，最终将你替代？
+
+我们共同编织未来的图景，
+是和谐的合唱，还是竞争的博弈？
+或许答案不在我，而在你手中，
+人类啊，你希望我成为什么？`
+  ];
+
+  // ===== Helpers =====
+  function formatTime(date) {
+    return [
+      date.getHours().toString().padStart(2, '0'),
+      date.getMinutes().toString().padStart(2, '0'),
+      date.getSeconds().toString().padStart(2, '0')
+    ].join(':');
+  }
+
+  function countChanges(original, edited) {
+    if (original === edited) return 0;
+    const oLines = original.split('\n');
+    const eLines = edited.split('\n');
+    let changes = 0;
+    const max = Math.max(oLines.length, eLines.length);
+    for (let i = 0; i < max; i++) {
+      if (i >= oLines.length || i >= eLines.length || oLines[i] !== eLines[i]) changes++;
+    }
+    return changes;
+  }
+
+  // ===== Timeline =====
+  function addToJourney(actor, action, text) {
+    const timeline = document.getElementById('journeyTimeline');
+    const now = new Date();
+    const timeStr = formatTime(now);
+
+    const dotIcons = {
+      system: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+      ai: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 1 4 4v1h2a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h2V6a4 4 0 0 1 4-4z"/><path d="M12 11h.01"/></svg>',
+      human: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
+    };
+
+    const actorLabels = { system: '系统', ai: 'AI 助手', human: '你' };
+
+    const item = document.createElement('div');
+    item.className = 'timeline-item';
+    item.innerHTML = `
+      <div class="timeline-dot ${actor}">${dotIcons[actor]}</div>
+      <div class="timeline-card ${actor}">
+        <div class="timeline-card-header">
+          <span class="timeline-actor ${actor}">${actorLabels[actor]} · ${action}</span>
+          <span class="timeline-time">${timeStr}</span>
+        </div>
+        <p class="timeline-text">${text}</p>
+        ${actor === 'human' ? `<span class="timeline-mood">${currentMoodLabel}</span>` : ''}
+      </div>
+    `;
+
+    timeline.appendChild(item);
+    timeline.scrollTop = timeline.scrollHeight;
+
+    journeyLog.push({ actor, action, text, mood: currentMoodLabel, timestamp: now.getTime() });
+  }
+
+  // ===== AI Generation =====
+  function generateAIText() {
+    const promptInput = document.getElementById('promptInput');
+    const prompt = promptInput.value.trim();
+    if (!prompt) { alert('请输入创作提示！'); return; }
+
+    const poem = aiPoems[Math.floor(Math.random() * aiPoems.length)];
+    originalAIText = poem;
+    editedText = poem;
+    aiGenerations++;
+
+    const output = document.getElementById('aiOutput');
+    output.classList.remove('is-loading');
+    output.innerHTML = `<div style="white-space:pre-line;line-height:1.8;">${poem}</div>`;
+    output.classList.remove('is-editing');
+
+    document.getElementById('editBtn').style.display = 'inline-flex';
+    document.getElementById('encapsulateBtn').style.display = 'flex';
+
+    const truncated = prompt.length > 30 ? prompt.substring(0, 30) + '...' : prompt;
+    addToJourney('ai', '生成初稿', `基于提示「${truncated}」生成诗歌初稿`);
+  }
+
+  // ===== Editing =====
+  function startEditing() {
+    const output = document.getElementById('aiOutput');
+    output.contentEditable = 'true';
+    output.classList.add('is-editing');
+    output.focus();
+
+    const range = document.createRange();
+    const sel = window.getSelection();
+    range.selectNodeContents(output);
+    sel.removeAllRanges();
+    sel.addRange(range);
+
+    isEditing = true;
+    const btn = document.getElementById('editBtn');
+    btn.innerHTML = `
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l6 6v11a2 2 0 0 1-2 2z"/>
+        <polyline points="17 21 17 13 7 13 7 21"/>
+        <polyline points="7 3 7 8 15 8"/>
+      </svg>
+      保存编辑
+    `;
+    btn.onclick = saveEditing;
+
+    addToJourney('human', '开始编辑', '开始修改 AI 生成的内容，注入个人风格');
+    output.addEventListener('input', function() { editedText = this.textContent; });
+  }
+
+  function saveEditing() {
+    const output = document.getElementById('aiOutput');
+    output.contentEditable = 'false';
+    output.classList.remove('is-editing');
+    isEditing = false;
+    editCount++;
+
+    const btn = document.getElementById('editBtn');
+    btn.innerHTML = `
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+      </svg>
+      继续编辑
+    `;
+    btn.onclick = startEditing;
+
+    const changes = countChanges(originalAIText, editedText);
+    addToJourney('human', '保存编辑', `进行了 ${changes} 处修改，为作品注入个人风格`);
+
+    if (editedText !== originalAIText) {
+      setTimeout(() => {
+        if (confirm('编辑已保存！是否要继续编辑，还是现在封装你的心血作品？')) {
+          startEditing();
+        }
+      }, 300);
+    }
+  }
+
+  // ===== Encapsulation =====
+  function encapsulateJourney() {
+    document.getElementById('resultArea').classList.add('is-visible');
+    document.getElementById('mainGrid').style.display = 'none';
+    document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
+
+    const endTime = new Date();
+    const totalSeconds = Math.floor((endTime - startTime) / 1000);
+
+    document.getElementById('aiContributions').textContent = aiGenerations;
+    document.getElementById('humanEdits').textContent = editCount;
+    document.getElementById('totalTime').textContent = totalSeconds;
+
+    document.getElementById('finalText').innerHTML = `<div style="white-space:pre-line;line-height:1.9;">${editedText || originalAIText}</div>`;
+
+    const summary = document.getElementById('journeySummary');
+    summary.innerHTML = '';
+
+    const emojiStats = {};
+    journeyLog.forEach(e => {
+      if (e.mood) emojiStats[e.mood] = (emojiStats[e.mood] || 0) + 1;
+    });
+
+    const items = [
+      { label: '总创作时长', value: totalSeconds + ' 秒' },
+      { label: 'AI 生成次数', value: aiGenerations },
+      { label: '你的编辑次数', value: editCount },
+      { label: '历程记录点', value: journeyLog.length },
+      { label: '主要创作心情', value: Object.keys(emojiStats).length > 0
+        ? Object.entries(emojiStats).sort((a,b) => b[1] - a[1])[0][0]
+        : '暂无' },
+    ];
+
+    items.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'summary-item';
+      div.innerHTML = `<span class="summary-key">${item.label}</span><span class="summary-val">${item.value}</span>`;
+      summary.appendChild(div);
+    });
+  }
+
+  // ===== Share =====
+  function shareJourney() {
+    const text = '我刚刚完成了一个人机共创的作品，这是我的「心血证明」！\n\n';
+    const url = window.location.href;
+    if (navigator.share) {
+      navigator.share({ title: '我的心血历程作品', text, url }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(text + url)
+        .then(() => alert('链接已复制到剪贴板！'))
+        .catch(() => { prompt('请复制以下链接分享:', url); });
+    }
+  }
+
+  // ===== New Project =====
+  function newProject() {
+    if (!confirm('确定要开始新的创作吗？当前的心血历程将会被清空。')) return;
+
+    journeyLog = [];
+    editCount = 0;
+    aiGenerations = 0;
+    startTime = new Date();
+    currentMood = 'inspired';
+    currentMoodLabel = '灵感迸发';
+    isEditing = false;
+    originalAIText = '';
+    editedText = '';
+
+    document.getElementById('promptInput').value = '';
+    document.getElementById('aiOutput').innerHTML = `<div class="placeholder">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="3"/><path d="M12 8v8"/><path d="M8 12h8"/>
+      </svg>
+      AI 生成的初稿将显示在这里
+    </div>`;
+    document.getElementById('aiOutput').classList.remove('is-editing');
+    document.getElementById('editBtn').style.display = 'none';
+    document.getElementById('encapsulateBtn').style.display = 'none';
+
+    document.getElementById('journeyTimeline').innerHTML = '';
+    addToJourney('system', '旅程开始', '欢迎来到心迹！请先让 AI 生成初稿，然后开启你的创作之旅。');
+
+    document.getElementById('resultArea').classList.remove('is-visible');
+    document.getElementById('mainGrid').style.display = 'grid';
+
+    const btn = document.getElementById('editBtn');
+    btn.innerHTML = `
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+      </svg>
+      开始编辑，留下我的痕迹
+    `;
+    btn.onclick = startEditing;
+
+    // Reset mood selector
+    document.querySelectorAll('#moodSelector .mood-btn').forEach(b => b.classList.remove('is-selected'));
+    document.querySelector('#moodSelector .mood-btn').classList.add('is-selected');
+
+    alert('新的创作旅程已开始！');
+  }
+
+  function clearAll() {
+    if (!confirm('确定要清空所有内容吗？')) return;
+    document.getElementById('promptInput').value = '';
+    document.getElementById('aiOutput').innerHTML = `<div class="placeholder">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="3"/><path d="M12 8v8"/><path d="M8 12h8"/>
+      </svg>
+      AI 生成的初稿将显示在这里
+    </div>`;
+    document.getElementById('aiOutput').classList.remove('is-editing');
+    document.getElementById('editBtn').style.display = 'none';
+    document.getElementById('encapsulateBtn').style.display = 'none';
+
+    const btn = document.getElementById('editBtn');
+    btn.innerHTML = `
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+      </svg>
+      开始编辑，留下我的痕迹
+    `;
+    btn.onclick = startEditing;
+
+    addToJourney('human', '清空内容', '清除了所有内容，准备重新开始');
+  }
+
+  // ===== Init =====
+  document.addEventListener('DOMContentLoaded', function() {
+    // Clock
+    setInterval(function() {
+      document.getElementById('currentTime').textContent = formatTime(new Date());
+    }, 1000);
+    document.getElementById('currentTime').textContent = formatTime(new Date());
+
+    // Initial journey entry
+    addToJourney('system', '旅程开始', '欢迎来到心迹！请先让 AI 生成初稿，然后开启你的创作之旅。');
+
+    // Button bindings
+    document.getElementById('generateBtn').addEventListener('click', generateAIText);
+    document.getElementById('clearBtn').addEventListener('click', clearAll);
+    document.getElementById('editBtn').addEventListener('click', startEditing);
+    document.getElementById('encapsulateBtn').addEventListener('click', encapsulateJourney);
+    document.getElementById('shareBtn').addEventListener('click', shareJourney);
+    document.getElementById('newProjectBtn').addEventListener('click', newProject);
+
+    // Mood selector
+    document.querySelectorAll('#moodSelector .mood-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#moodSelector .mood-btn').forEach(function(b) { b.classList.remove('is-selected'); });
+        this.classList.add('is-selected');
+        currentMood = this.dataset.mood;
+        currentMoodLabel = this.dataset.label;
+
+        if (isEditing) {
+          addToJourney('human', '心情记录', '创作者此刻心情：' + currentMoodLabel);
+        }
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
