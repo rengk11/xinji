@@ -390,57 +390,50 @@ button {
 
 .ai-output .placeholder svg { opacity: 0.3; }
 
-/* ===== Mood Selector ===== */
-.mood-section {
+/* ===== Emoji Selector ===== */
+.emoji-section {
   margin-bottom: var(--space-5);
 }
 
-.mood-label {
+.emoji-label {
   font-size: var(--text-sm);
   font-weight: 600;
   color: var(--color-text-secondary);
   margin-bottom: var(--space-2);
 }
 
-.mood-selector {
+.emoji-selector {
   display: flex;
   gap: var(--space-2);
   flex-wrap: wrap;
 }
 
-.mood-btn {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-2) var(--space-3);
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-full);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--color-text-secondary);
+.emoji-btn {
+  font-size: 1.4rem;
   background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  width: 48px;
+  height: 48px;
   cursor: pointer;
   transition: all var(--transition-fast);
-  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.mood-btn:hover {
+.emoji-btn:hover {
+  transform: scale(1.12);
   border-color: var(--color-primary);
-  color: var(--color-primary);
   background: var(--color-primary-light);
 }
 
-.mood-btn.is-selected {
-  background: var(--color-primary-light);
+.emoji-btn.is-selected {
+  transform: scale(1.1);
   border-color: var(--color-primary);
-  color: var(--color-primary);
-  font-weight: 600;
-}
-
-.mood-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
+  background: var(--color-primary-light);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
 }
 
 /* ===== Timeline ===== */
@@ -902,21 +895,14 @@ button {
       </button>
     </div>
 
-    <div class="mood-section">
-      <p class="mood-label">记录此刻心情</p>
-      <div class="mood-selector" id="moodSelector">
-        <button class="mood-btn is-selected" data-mood="inspired" data-label="灵感迸发">
-          <span class="mood-dot" style="background:#6366F1"></span> 灵感迸发
-        </button>
-        <button class="mood-btn" data-mood="thoughtful" data-label="深度思考">
-          <span class="mood-dot" style="background:#0891B2"></span> 深度思考
-        </button>
-        <button class="mood-btn" data-mood="focused" data-label="专注创作">
-          <span class="mood-dot" style="background:#F59E0B"></span> 专注创作
-        </button>
-        <button class="mood-btn" data-mood="passionate" data-label="充满激情">
-          <span class="mood-dot" style="background:#EF4444"></span> 充满激情
-        </button>
+    <div class="emoji-section">
+      <p class="emoji-label">记录此刻心情</p>
+      <div class="emoji-selector" id="emojiSelector">
+        <button class="emoji-btn is-selected" data-emoji="😊">😊</button>
+        <button class="emoji-btn" data-emoji="🤔">🤔</button>
+        <button class="emoji-btn" data-emoji="💡">💡</button>
+        <button class="emoji-btn" data-emoji="🎯">🎯</button>
+        <button class="emoji-btn" data-emoji="🔥">🔥</button>
       </div>
     </div>
 
@@ -1101,8 +1087,7 @@ button {
   let editCount = 0;
   let aiGenerations = 0;
   let startTime = new Date();
-  let currentMood = 'inspired';
-  let currentMoodLabel = '灵感迸发';
+  let currentEmoji = '😊';
   let isEditing = false;
   let originalAIText = '';
   let editedText = '';
@@ -1184,21 +1169,21 @@ button {
           <span class="timeline-time">${timeStr}</span>
         </div>
         <p class="timeline-text">${text}</p>
-        ${actor === 'human' ? `<span class="timeline-mood">${currentMoodLabel}</span>` : ''}
+        ${actor === 'human' ? `<span class="timeline-mood">${currentEmoji}</span>` : ''}
       </div>
     `;
 
     timeline.appendChild(item);
     timeline.scrollTop = timeline.scrollHeight;
 
-    journeyLog.push({ actor, action, text, mood: currentMoodLabel, timestamp: now.getTime() });
+    journeyLog.push({ actor, action, text, emoji: currentEmoji, timestamp: now.getTime() });
   }
 
   // ===== AI Generation =====
   function generateAIText() {
     const promptInput = document.getElementById('promptInput');
     const prompt = promptInput.value.trim();
-    if (!prompt) { alert('请输入创作提示！'); return; }
+    if (!prompt) return;
 
     const poem = aiPoems[Math.floor(Math.random() * aiPoems.length)];
     originalAIText = poem;
@@ -1264,14 +1249,6 @@ button {
 
     const changes = countChanges(originalAIText, editedText);
     addToJourney('human', '保存编辑', `进行了 ${changes} 处修改，为作品注入个人风格`);
-
-    if (editedText !== originalAIText) {
-      setTimeout(() => {
-        if (confirm('编辑已保存！是否要继续编辑，还是现在封装你的心血作品？')) {
-          startEditing();
-        }
-      }, 300);
-    }
   }
 
   // ===== Encapsulation =====
@@ -1294,7 +1271,7 @@ button {
 
     const emojiStats = {};
     journeyLog.forEach(e => {
-      if (e.mood) emojiStats[e.mood] = (emojiStats[e.mood] || 0) + 1;
+      if (e.emoji) emojiStats[e.emoji] = (emojiStats[e.emoji] || 0) + 1;
     });
 
     const items = [
@@ -1322,22 +1299,17 @@ button {
     if (navigator.share) {
       navigator.share({ title: '我的心血历程作品', text, url }).catch(() => {});
     } else {
-      navigator.clipboard.writeText(text + url)
-        .then(() => alert('链接已复制到剪贴板！'))
-        .catch(() => { prompt('请复制以下链接分享:', url); });
+      navigator.clipboard.writeText(text + url).catch(() => {});
     }
   }
 
   // ===== New Project =====
   function newProject() {
-    if (!confirm('确定要开始新的创作吗？当前的心血历程将会被清空。')) return;
-
     journeyLog = [];
     editCount = 0;
     aiGenerations = 0;
     startTime = new Date();
-    currentMood = 'inspired';
-    currentMoodLabel = '灵感迸发';
+    currentEmoji = '😊';
     isEditing = false;
     originalAIText = '';
     editedText = '';
@@ -1369,14 +1341,11 @@ button {
     btn.onclick = startEditing;
 
     // Reset mood selector
-    document.querySelectorAll('#moodSelector .mood-btn').forEach(b => b.classList.remove('is-selected'));
-    document.querySelector('#moodSelector .mood-btn').classList.add('is-selected');
-
-    alert('新的创作旅程已开始！');
+    document.querySelectorAll('#emojiSelector .emoji-btn').forEach(function(b) { b.classList.remove('is-selected'); });
+    document.querySelector('#emojiSelector .emoji-btn').classList.add('is-selected');
   }
 
   function clearAll() {
-    if (!confirm('确定要清空所有内容吗？')) return;
     document.getElementById('promptInput').value = '';
     document.getElementById('aiOutput').innerHTML = `<div class="placeholder">
       <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1420,15 +1389,14 @@ button {
     document.getElementById('newProjectBtn').addEventListener('click', newProject);
 
     // Mood selector
-    document.querySelectorAll('#moodSelector .mood-btn').forEach(function(btn) {
+    document.querySelectorAll('#emojiSelector .emoji-btn').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        document.querySelectorAll('#moodSelector .mood-btn').forEach(function(b) { b.classList.remove('is-selected'); });
+        document.querySelectorAll('#emojiSelector .emoji-btn').forEach(function(b) { b.classList.remove('is-selected'); });
         this.classList.add('is-selected');
-        currentMood = this.dataset.mood;
-        currentMoodLabel = this.dataset.label;
+        currentEmoji = this.dataset.emoji;
 
         if (isEditing) {
-          addToJourney('human', '心情记录', '创作者此刻心情：' + currentMoodLabel);
+          addToJourney('human', '心情记录', '创作者此刻心情 ' + currentEmoji);
         }
       });
     });
